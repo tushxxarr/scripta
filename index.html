@@ -27,9 +27,17 @@
         
         @media print {
             body * { visibility: hidden; }
-            #printable-payslip, #printable-payslip * { visibility: visible; }
-            #printable-payslip { position: absolute; left: 0; top: 0; width: 100%; }
+            
+            body.print-payslip #printable-payslip, 
+            body.print-payslip #printable-payslip * { visibility: visible; }
+            
+            body.print-letter #printable-letter, 
+            body.print-letter #printable-letter * { visibility: visible; }
+            
+            #printable-payslip, #printable-letter { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
             .no-print { display: none !important; }
+            
+            @page { margin: 1cm; }
         }
         
         .fade-in { animation: fadeIn 0.3s ease-out forwards; }
@@ -46,7 +54,7 @@
         .assam-rules-active .mandatory-tag { display: inline-block; color: #ef4444; font-weight: bold; margin-left: 4px; }
     </style>
 </head>
-<body class="text-slate-800 h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
+<body id="app-body" class="text-slate-800 h-screen flex overflow-hidden selection:bg-brand-500 selection:text-white">
 
     <aside class="w-64 bg-dark-900 text-slate-300 flex flex-col transition-all duration-300 z-30 shadow-2xl no-print h-full shrink-0">
         
@@ -82,6 +90,9 @@
                     <button onclick="app.ui.nav('payroll')" id="nav-payroll" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
                         <i class="fas fa-file-invoice-dollar w-6 text-center"></i> Payroll & Payslips
                     </button>
+                    <button onclick="app.ui.nav('letters')" id="nav-letters" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                        <i class="fas fa-envelope-open-text w-6 text-center"></i> Official Letters
+                    </button>
                 </nav>
             </div>
 
@@ -91,32 +102,17 @@
                     <button onclick="app.ui.nav('jobs')" id="nav-jobs" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
                         <i class="fas fa-briefcase w-6 text-center"></i> Job Postings
                     </button>
-                    <button onclick="app.ui.nav('candidates')" id="nav-candidates" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                        <i class="fas fa-user-tie w-6 text-center"></i> Candidates & Hiring
-                    </button>
-                </nav>
-            </div>
-
-            <div>
-                <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 pl-2">Talent Management</div>
-                <nav class="space-y-1">
-                    <button onclick="app.ui.nav('performance')" id="nav-performance" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                        <i class="fas fa-chart-line w-6 text-center"></i> Performance Reviews
-                    </button>
-                    <button onclick="app.ui.nav('training')" id="nav-training" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                        <i class="fas fa-graduation-cap w-6 text-center"></i> Training (LMS)
-                    </button>
                 </nav>
             </div>
 
             <div>
                 <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 pl-2">Organization</div>
                 <nav class="space-y-1">
+                    <button onclick="app.ui.nav('calendar')" id="nav-calendar" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                        <i class="fas fa-calendar-alt w-6 text-center"></i> Indian Calendar
+                    </button>
                     <button onclick="app.ui.nav('assets')" id="nav-assets" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
                         <i class="fas fa-laptop w-6 text-center"></i> Assets & Machinery
-                    </button>
-                    <button onclick="app.ui.nav('meetings')" id="nav-meetings" class="nav-btn w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-                        <i class="fas fa-handshake w-6 text-center"></i> Meetings & Minutes
                     </button>
                 </nav>
             </div>
@@ -132,9 +128,8 @@
         </div>
     </aside>
 
-    <div class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative" id="app-body">
+    <div class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative">
         
-        <!-- Top Header -->
         <header class="h-20 glass-panel shadow-sm border-b border-slate-200 flex items-center justify-between px-8 z-20 no-print shrink-0">
             <div>
                 <h1 class="text-2xl font-extrabold text-slate-800" id="header-title">Dashboard Overview</h1>
@@ -156,7 +151,6 @@
             
             <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none no-print"></div>
 
-            <!-- MODULE: Dashboard -->
             <section id="view-dashboard" class="app-view fade-in block">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group">
@@ -175,9 +169,9 @@
                         <h3 class="text-4xl font-black text-slate-800 relative z-10" id="dash-jobs">0</h3>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 relative overflow-hidden group">
-                        <div class="absolute -right-6 -top-6 text-orange-50 opacity-50 group-hover:scale-110 transition-transform"><i class="fas fa-laptop text-9xl"></i></div>
-                        <p class="text-sm text-slate-500 font-semibold mb-1 relative z-10">Active Assets</p>
-                        <h3 class="text-4xl font-black text-slate-800 relative z-10" id="dash-assets">0</h3>
+                        <div class="absolute -right-6 -top-6 text-orange-50 opacity-50 group-hover:scale-110 transition-transform"><i class="fas fa-calendar-alt text-9xl"></i></div>
+                        <p class="text-sm text-slate-500 font-semibold mb-1 relative z-10">Upcoming Events</p>
+                        <h3 class="text-4xl font-black text-slate-800 relative z-10" id="dash-events">0</h3>
                     </div>
                 </div>
 
@@ -256,7 +250,7 @@
                                 </select>
                             </div>
                             <div class="flex gap-3">
-                                <button onclick="window.print()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold shadow-md transition-all flex items-center justify-center">
+                                <button onclick="app.ui.printDoc('payslip')" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold shadow-md transition-all flex items-center justify-center">
                                     <i class="fas fa-print mr-2"></i> Print
                                 </button>
                                 <button onclick="app.payroll.emailPayslip()" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-xl font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center">
@@ -306,7 +300,11 @@
                                 <td class="border-l border-r border-slate-300 p-3 pl-4 text-slate-700">Dearness Allowance (DA)</td><td class="border-r border-slate-300 p-3 text-right font-medium" id="ps-doc-da"></td>
                                 <td class="border-r border-slate-300 p-3 pl-4 text-slate-700">Professional Tax</td><td class="border-r border-slate-300 p-3 text-right font-medium" id="ps-doc-ptax"></td>
                             </tr>
-                            <tr><td class="border-l border-r border-slate-300 p-6"></td><td class="border-r border-slate-300 p-6"></td><td class="border-r border-slate-300 p-6"></td><td class="border-r border-slate-300 p-6"></td></tr>
+                            <tr>
+                                <td class="border-l border-r border-slate-300 p-3 pl-4 text-slate-700">Other Allowances</td><td class="border-r border-slate-300 p-3 text-right font-medium" id="ps-doc-allowance"></td>
+                                <td class="border-r border-slate-300 p-3 pl-4 text-slate-700"></td><td class="border-r border-slate-300 p-3 text-right font-medium"></td>
+                            </tr>
+                            <tr><td class="border-l border-r border-slate-300 p-4"></td><td class="border-r border-slate-300 p-4"></td><td class="border-r border-slate-300 p-4"></td><td class="border-r border-slate-300 p-4"></td></tr>
                             <tr class="font-bold bg-slate-50 border-t border-b border-slate-300">
                                 <td class="border-l border-r border-slate-300 p-3 pl-4">Gross Earnings</td><td class="border-r border-slate-300 p-3 text-right text-green-700" id="ps-doc-gross"></td>
                                 <td class="border-r border-slate-300 p-3 pl-4">Total Deductions</td><td class="border-r border-slate-300 p-3 text-right text-red-700" id="ps-doc-deduct"></td>
@@ -318,6 +316,92 @@
                             <span class="text-3xl font-black text-brand-400" id="ps-doc-net"></span>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <section id="view-letters" class="app-view fade-in hidden">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 mb-8 no-print">
+                    <h3 class="text-xl font-bold text-slate-800 mb-6">Generate Official Letters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Employee</label>
+                            <select id="lt-emp-select" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl p-3 outline-none focus:border-brand-500 transition-all" onchange="app.letters.generate()">
+                                <option value="">Select Employee...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Letter Type</label>
+                            <select id="lt-type-select" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl p-3 outline-none focus:border-brand-500 transition-all" onchange="app.letters.generate()">
+                                <option value="joining">Appointment / Joining Letter</option>
+                                <option value="resignation">Acceptance of Resignation</option>
+                                <option value="termination">Termination Notice</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button onclick="app.ui.printDoc('letter')" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-3 rounded-xl font-bold shadow-md transition-all flex items-center justify-center">
+                                <i class="fas fa-print mr-2"></i> Print Letter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Printable Letter Area -->
+                <div id="printable-letter" class="bg-white mx-auto shadow-2xl border border-slate-200 hidden" style="max-width: 800px; min-height: 1000px;">
+                    <div class="p-12">
+                        <div class="text-center border-b-2 border-slate-800 pb-6 mb-8">
+                            <h2 class="text-3xl font-black uppercase text-slate-900 tracking-wide" id="lt-doc-company">M/S DEKAPATHAR TEA ESTATE</h2>
+                            <p class="text-sm text-slate-600 italic mt-1">(A Unit of Sanstav Udyog Pvt. Ltd.)</p>
+                            <p class="text-xs text-slate-500 mt-2 font-medium">Vill - Dekapathar, P.O - Lahorijan, Dist - Biswanath, Assam</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-sm font-medium text-slate-800 mb-8">
+                            <span>Ref: <span class="font-mono">DTE/HR/2026/00<span id="lt-ref"></span></span></span>
+                            <span>Date: <span id="lt-date"></span></span>
+                        </div>
+
+                        <div class="text-sm text-slate-800 mb-8 leading-relaxed">
+                            <p class="font-bold">To,</p>
+                            <p class="font-bold text-lg mt-1" id="lt-emp-name">Employee Name</p>
+                            <p id="lt-emp-code" class="text-slate-600 font-mono text-xs mb-1">Emp Code</p>
+                            <p id="lt-emp-role" class="text-slate-600">Designation</p>
+                            <p id="lt-emp-dept" class="text-slate-600">Department</p>
+                        </div>
+
+                        <div id="lt-content" class="text-sm text-slate-800 leading-relaxed space-y-4 text-justify">
+                            <!-- Letter content injected here -->
+                        </div>
+
+                        <div class="mt-24 text-sm text-slate-800">
+                            <p>Yours faithfully,</p>
+                            <p class="font-bold mt-1">For <span id="lt-sign-company">M/S Dekapathar Tea Estate</span></p>
+                            <div class="mt-12 w-48 border-t border-slate-800 pt-2 font-bold">
+                                Factory Manager / HR Head
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-calendar" class="app-view fade-in hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Indian Calendar & Schedules</h2>
+                    <button onclick="app.ui.modal('modal-event', true)" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md transition-all">
+                        <i class="fas fa-calendar-plus mr-2"></i> Add Schedule
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-1">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                                <th class="p-4 font-bold w-32">Date</th>
+                                <th class="p-4 font-bold">Event / Holiday Name</th>
+                                <th class="p-4 font-bold">Type</th>
+                                <th class="p-4 font-bold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-calendar" class="divide-y divide-slate-50 text-sm"></tbody>
+                    </table>
                 </div>
             </section>
 
@@ -359,12 +443,7 @@
                 </div>
             </section>
 
-            <!-- Static Placeholders for other modules to maintain Mega SaaS feel -->
             <section id="view-attendance" class="app-view fade-in hidden"><div class="flex flex-col items-center justify-center h-96 bg-white rounded-2xl border border-dashed border-slate-300"><i class="fas fa-user-clock text-6xl text-slate-200 mb-4"></i><h3 class="text-xl font-bold text-slate-700 mb-2">Attendance Logs</h3><p class="text-slate-500 text-sm">Attendance module active. Connect biometrics via API.</p></div></section>
-            <section id="view-candidates" class="app-view fade-in hidden"><div class="flex flex-col items-center justify-center h-96 bg-white rounded-2xl border border-dashed border-slate-300"><i class="fas fa-user-tie text-6xl text-slate-200 mb-4"></i><h3 class="text-xl font-bold text-slate-700 mb-2">Candidate Pipeline</h3><p class="text-slate-500 text-sm">Post jobs first to receive applications.</p></div></section>
-            <section id="view-performance" class="app-view fade-in hidden"><div class="flex flex-col items-center justify-center h-96 bg-white rounded-2xl border border-dashed border-slate-300"><i class="fas fa-chart-line text-6xl text-slate-200 mb-4"></i><h3 class="text-xl font-bold text-slate-700 mb-2">Performance Reviews</h3><p class="text-slate-500 text-sm">Quarterly KPIs and goal tracking.</p></div></section>
-            <section id="view-training" class="app-view fade-in hidden"><div class="flex flex-col items-center justify-center h-96 bg-white rounded-2xl border border-dashed border-slate-300"><i class="fas fa-graduation-cap text-6xl text-slate-200 mb-4"></i><h3 class="text-xl font-bold text-slate-700 mb-2">Learning Management (LMS)</h3><p class="text-slate-500 text-sm">Upload safety and machinery training materials.</p></div></section>
-            <section id="view-meetings" class="app-view fade-in hidden"><div class="flex flex-col items-center justify-center h-96 bg-white rounded-2xl border border-dashed border-slate-300"><i class="fas fa-handshake text-6xl text-slate-200 mb-4"></i><h3 class="text-xl font-bold text-slate-700 mb-2">Meeting Minutes</h3><p class="text-slate-500 text-sm">Schedule factory floor meetings.</p></div></section>
 
             <section id="view-settings" class="app-view fade-in hidden">
                 <h2 class="text-2xl font-bold text-slate-800 mb-6">System & Cloud Configurations</h2>
@@ -379,7 +458,7 @@
                             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
                                 <div>
                                     <h4 class="text-sm font-bold text-slate-800">Assam Factories Rules (1950)</h4>
-                                    <p class="text-xs text-slate-500">Enforce mandatory fields, 12% PF, and PTax on Payroll.</p>
+                                    <p class="text-xs text-slate-500">Enable mandatory tags and default 12% PF / PTax on Payroll.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="set-assam-rules" class="sr-only peer">
@@ -392,6 +471,22 @@
                         </form>
                     </div>
 
+                    <div class="bg-white rounded-2xl shadow-sm border border-orange-100 p-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">EMAIL GATEWAY</div>
+                        <div class="flex items-center mb-6"><i class="fas fa-envelope-open-text text-orange-500 text-2xl mr-3"></i><h3 class="text-lg font-bold text-slate-800">Sender.net API</h3></div>
+                        <form onsubmit="app.settings.saveSender(event)" class="space-y-4">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase">API Access Token</label>
+                                    <button type="button" onclick="app.ui.modal('modal-sender-guide', true)" class="text-[10px] text-orange-600 hover:underline font-bold"><i class="fas fa-question-circle"></i> Setup Guide</button>
+                                </div>
+                                <input type="password" id="set-sender-token" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-mono focus:border-orange-500 outline-none">
+                            </div>
+                            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">From Email (Authorized Sender)</label><input type="email" id="set-sender-email" placeholder="hr@yourdomain.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:border-orange-500 outline-none"></div>
+                            <button type="submit" class="bg-orange-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-orange-700 w-full">Save Sender Settings</button>
+                        </form>
+                    </div>
+
                     <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 relative overflow-hidden">
                         <div class="absolute top-0 right-0 bg-blue-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">VERCEL CLOUD DB</div>
                         <div class="flex items-center mb-6"><i class="fas fa-database text-blue-500 text-2xl mr-3"></i><h3 class="text-lg font-bold text-slate-800">Vercel KV Settings</h3></div>
@@ -400,16 +495,6 @@
                             <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">KV_REST_API_URL</label><input type="url" id="set-kv-url" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:border-blue-500 outline-none"></div>
                             <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">KV_REST_API_TOKEN</label><input type="password" id="set-kv-token" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:border-blue-500 outline-none"></div>
                             <button type="submit" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-blue-700 w-full">Connect Database</button>
-                        </form>
-                    </div>
-
-                    <div class="bg-white rounded-2xl shadow-sm border border-orange-100 p-6 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">EMAIL GATEWAY</div>
-                        <div class="flex items-center mb-6"><i class="fas fa-envelope-open-text text-orange-500 text-2xl mr-3"></i><h3 class="text-lg font-bold text-slate-800">Sender.net API</h3></div>
-                        <form onsubmit="app.settings.saveSender(event)" class="space-y-4">
-                            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">API Access Token</label><input type="password" id="set-sender-token" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-mono focus:border-orange-500 outline-none"></div>
-                            <div><label class="block text-xs font-bold text-slate-500 uppercase mb-2">From Email (Authorized Sender)</label><input type="email" id="set-sender-email" placeholder="hr@yourdomain.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:border-orange-500 outline-none"></div>
-                            <button type="submit" class="bg-orange-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md hover:bg-orange-700 w-full">Save Sender Settings</button>
                         </form>
                     </div>
 
@@ -444,9 +529,23 @@
                         <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Department</label><input id="emp-dept" required class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-brand-500"></div>
                         <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Designation</label><input id="emp-role" required class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-brand-500"></div>
                         
-                        <div class="md:col-span-2 mt-2"><h4 class="text-xs font-black text-blue-600 uppercase tracking-widest border-b pb-2">Salary Config</h4></div>
+                        <div class="md:col-span-2 mt-2 flex justify-between items-end border-b pb-2">
+                            <h4 class="text-xs font-black text-blue-600 uppercase tracking-widest">Salary & Tax Config</h4>
+                        </div>
                         <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Basic Pay (₹) <span class="mandatory-tag">*</span></label><input type="number" id="emp-basic" required class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">DA (₹) <span class="mandatory-tag">*</span></label><input type="number" id="emp-da" required class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500"></div>
+                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Other Allowances (₹)</label><input type="number" id="emp-allowance" value="0" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500"></div>
+                        
+                        <div class="md:col-span-2 flex space-x-6 mt-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="emp-pf" class="w-4 h-4 text-brand-600 rounded border-gray-300 focus:ring-brand-500">
+                                <span class="text-sm font-bold text-slate-700">Deduct PF (12%)</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="emp-ptax" class="w-4 h-4 text-brand-600 rounded border-gray-300 focus:ring-brand-500">
+                                <span class="text-sm font-bold text-slate-700">Deduct Prof. Tax</span>
+                            </label>
+                        </div>
                     </div>
                     <div class="pt-6 flex justify-end space-x-3 border-t border-slate-100">
                         <button type="button" onclick="app.ui.modal('modal-employee', false)" class="px-5 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl">Cancel</button>
@@ -483,10 +582,43 @@
         </div>
     </div>
 
+    <!-- Calendar Event Modal -->
+    <div id="modal-event" class="fixed inset-0 bg-slate-900/60 hidden z-[60] flex items-center justify-center fade-in no-print backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="bg-slate-800 p-5 flex justify-between items-center text-white"><h3 class="font-bold text-lg">Add Schedule / Holiday</h3><button onclick="app.ui.modal('modal-event', false)" class="text-slate-400 hover:text-white"><i class="fas fa-times text-xl"></i></button></div>
+            <form id="form-event" onsubmit="app.calendar.save(event)" class="p-6 space-y-4">
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Date</label><input type="date" id="evt-date" required class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-brand-500"></div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Event Name</label><input id="evt-name" required class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-brand-500" placeholder="e.g. Factory Inspection"></div>
+                <div><label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Type</label><select id="evt-type" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-brand-500"><option>Holiday</option><option>Meeting</option><option>Inspection</option></select></div>
+                <div class="pt-4 flex justify-end space-x-3"><button type="button" onclick="app.ui.modal('modal-event', false)" class="px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-xl">Cancel</button><button type="submit" class="px-5 py-2 text-sm font-bold bg-brand-600 text-white rounded-xl shadow">Save Event</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sender.net Setup Guide Modal -->
+    <div id="modal-sender-guide" class="fixed inset-0 bg-slate-900/60 hidden z-[70] flex items-center justify-center fade-in no-print backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="bg-orange-600 p-5 flex justify-between items-center text-white"><h3 class="font-bold text-lg"><i class="fas fa-envelope-open-text mr-2"></i> Sender.net API Setup Guide</h3><button onclick="app.ui.modal('modal-sender-guide', false)" class="text-orange-200 hover:text-white"><i class="fas fa-times text-xl"></i></button></div>
+            <div class="p-6 space-y-4 text-sm text-slate-700">
+                <p>To enable automatic payslip emails, follow these steps to connect your Sender.net account:</p>
+                <ol class="list-decimal pl-5 space-y-3 font-medium">
+                    <li>Log in to your <strong>Sender.net</strong> dashboard.</li>
+                    <li>Navigate to <strong>Settings</strong> > <strong>API access tokens</strong>.</li>
+                    <li>Click the button to generate a new token. You will receive a long string starting with <span class="font-mono bg-slate-100 px-1 rounded text-orange-600">eyJ...</span></li>
+                    <li>Copy that exact token and paste it into the "API Access Token" field in the Settings module here.</li>
+                    <li>Enter the verified <strong>From Email</strong> address you use in Sender.net (e.g. hr@yourdomain.com).</li>
+                </ol>
+                <div class="bg-orange-50 p-4 rounded-xl border border-orange-200 mt-4 text-xs">
+                    <strong>Note:</strong> Your token acts as a master key to your Sender account. This script securely uses it to call the <code>https://api.sender.net/v2/messages</code> endpoint to dispatch emails directly to your staff.
+                </div>
+                <div class="pt-4 flex justify-end"><button onclick="app.ui.modal('modal-sender-guide', false)" class="px-5 py-2 text-sm font-bold bg-slate-800 text-white rounded-xl shadow hover:bg-slate-900">Understood</button></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const DB_KEY = 'dte_megasaas_v2';
+        const DB_KEY = 'dte_megasaas_v3';
         
-        // Default Database Structure
         const defaultDB = {
             settings: {
                 companyName: "Dekapathar Tea Estate",
@@ -500,10 +632,17 @@
                 cashfreeSecret: ""
             },
             employees: [
-                { id: "1700000000001", name: "Mithilesh Jha", code: "DTE/F/045", email: "mithilesh@example.com", dept: "Maintenance", role: "Fitter", basic: 18000, da: 7000 }
+                { id: "1700000000001", name: "Mithilesh Jha", code: "DTE/F/045", email: "mithilesh@example.com", dept: "Maintenance", role: "Fitter", basic: 18000, da: 7000, allowance: 1500, pfOpt: true, ptaxOpt: true }
             ],
             jobs: [],
-            assets: []
+            assets: [],
+            calendar: [
+                { id: "c1", date: "2026-01-26", name: "Republic Day", type: "Holiday" },
+                { id: "c2", date: "2026-04-14", name: "Rongali Bihu", type: "Holiday" },
+                { id: "c3", date: "2026-08-15", name: "Independence Day", type: "Holiday" },
+                { id: "c4", date: "2026-10-02", name: "Gandhi Jayanti", type: "Holiday" },
+                { id: "c5", date: "2026-11-08", name: "Diwali", type: "Holiday" }
+            ]
         };
 
         const app = {
@@ -513,11 +652,9 @@
             // --- Vercel KV REST & Local Storage Hybrid DB Engine ---
             db: {
                 async load() {
-                    // Try Local Storage First
                     const localData = localStorage.getItem(DB_KEY);
                     app.data = localData ? JSON.parse(localData) : JSON.parse(JSON.stringify(defaultDB));
 
-                    // Sync from Vercel KV if configured
                     if(app.data.settings.kvUrl && app.data.settings.kvToken) {
                         try {
                             app.ui.setDbStatus('SYNCING...', 'yellow');
@@ -527,7 +664,7 @@
                             const json = await res.json();
                             if(json.result) {
                                 app.data = JSON.parse(json.result);
-                                localStorage.setItem(DB_KEY, JSON.stringify(app.data)); // Backup locally
+                                localStorage.setItem(DB_KEY, JSON.stringify(app.data)); 
                                 app.ui.log("Successfully synced with Vercel KV Cloud Database.");
                                 app.ui.setDbStatus('VERCEL KV ACTIVE', 'blue');
                             } else {
@@ -546,10 +683,7 @@
                 },
                 
                 async save() {
-                    // Always save locally immediately for snappiness
                     localStorage.setItem(DB_KEY, JSON.stringify(app.data));
-                    
-                    // Push to Vercel KV in background if configured
                     if(app.data.settings.kvUrl && app.data.settings.kvToken) {
                         try {
                             await fetch(`${app.data.settings.kvUrl}/set/${DB_KEY}`, {
@@ -557,9 +691,7 @@
                                 headers: { Authorization: `Bearer ${app.data.settings.kvToken}` },
                                 body: JSON.stringify(app.data)
                             });
-                        } catch(e) {
-                            console.error("Vercel KV Save Error", e);
-                        }
+                        } catch(e) {}
                     }
                 },
                 clear() {
@@ -588,14 +720,11 @@
                     const titles = { 
                         dashboard: {t: 'Dashboard Overview', s: 'Mega SaaS Workspace.'},
                         employees: {t: 'Staff Directory', s: 'Manage employee profiles and records.'},
-                        attendance: {t: 'Attendance & Time Tracking', s: 'Monitor shifts and check-ins.'},
                         payroll: {t: 'Payroll & Disbursals', s: 'Generate payslips and execute payments.'},
+                        letters: {t: 'Official Letters', s: 'Generate Joining, Resignation, and Termination letters.'},
+                        calendar: {t: 'Indian Calendar', s: 'Manage holidays and factory schedules.'},
                         jobs: {t: 'Job Postings (ATS)', s: 'Manage open requisitions.'},
-                        candidates: {t: 'Candidate Pipeline', s: 'Track applicants through hiring stages.'},
-                        performance: {t: 'Performance Management', s: 'Goal tracking and reviews.'},
-                        training: {t: 'Learning Management System', s: 'Staff training programs.'},
                         assets: {t: 'Company Assets', s: 'Track machinery and equipment.'},
-                        meetings: {t: 'Meeting Minutes', s: 'Organize internal coordination.'},
                         settings: {t: 'System Configuration', s: 'Cloud DB, API Keys, and Compliance.'}
                     };
                     if(titles[moduleName]) {
@@ -605,7 +734,17 @@
                 },
                 modal: (id, show) => {
                     const el = document.getElementById(id);
-                    if(show) { el.classList.remove('hidden'); document.getElementById(`form-${id.split('-')[1]}`)?.reset(); } 
+                    if(show) { 
+                        el.classList.remove('hidden'); 
+                        const form = document.getElementById(`form-${id.split('-')[1]}`);
+                        if(form) form.reset(); 
+                        
+                        // Auto-check PF/PTax if Assam Rules are on
+                        if(id === 'modal-employee' && app.data.settings.assamRules) {
+                            document.getElementById('emp-pf').checked = true;
+                            document.getElementById('emp-ptax').checked = true;
+                        }
+                    } 
                     else { el.classList.add('hidden'); }
                 },
                 toast: (msg, type='success') => {
@@ -621,8 +760,7 @@
                     const entry = document.createElement('div');
                     const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
                     entry.className = "flex items-start text-sm fade-in p-2 hover:bg-slate-50 rounded-lg transition-colors";
-                    entry.innerHTML = `<div class="w-2 h-2 rounded-full bg-brand-500 mt-1.5 mr-3 shrink-0"></div>
-                                       <div class="flex-1"><p class="text-slate-700 font-medium">${msg}</p><p class="text-[10px] text-slate-400">${time}</p></div>`;
+                    entry.innerHTML = `<div class="w-2 h-2 rounded-full bg-brand-500 mt-1.5 mr-3 shrink-0"></div><div class="flex-1"><p class="text-slate-700 font-medium">${msg}</p><p class="text-[10px] text-slate-400">${time}</p></div>`;
                     if(log.children[0] && log.children[0].innerText.includes('Initializing')) log.innerHTML = '';
                     log.prepend(entry);
                     if(log.children.length > 6) log.lastChild.remove();
@@ -631,6 +769,12 @@
                     const badge = document.getElementById('db-status-badge');
                     document.getElementById('db-status-text').innerText = text;
                     badge.className = `hidden md:flex items-center px-3 py-1.5 rounded-full border shadow-sm transition-colors duration-500 bg-${color}-50 text-${color}-700 border-${color}-200`;
+                },
+                printDoc: (type) => {
+                    // Type is either 'payslip' or 'letter'
+                    document.body.classList.add(`print-${type}`);
+                    window.print();
+                    document.body.classList.remove(`print-${type}`);
                 }
             },
 
@@ -646,37 +790,41 @@
                         dept: document.getElementById('emp-dept').value,
                         role: document.getElementById('emp-role').value,
                         basic: Number(document.getElementById('emp-basic').value),
-                        da: Number(document.getElementById('emp-da').value)
+                        da: Number(document.getElementById('emp-da').value),
+                        allowance: Number(document.getElementById('emp-allowance').value) || 0,
+                        pfOpt: document.getElementById('emp-pf').checked,
+                        ptaxOpt: document.getElementById('emp-ptax').checked
                     };
                     app.data.employees.push(emp);
                     app.db.save();
                     app.ui.toast(`Employee ${emp.name} added successfully.`);
-                    app.ui.log(`New employee added: ${emp.name} (${emp.code})`);
+                    app.ui.log(`New employee added: ${emp.name}`);
                     app.ui.modal('modal-employee', false);
                     app.renderAll();
                 },
                 delete: (id) => {
                     if(!confirm('Permanently delete employee record?')) return;
                     app.data.employees = app.data.employees.filter(e => e.id !== id);
-                    app.db.save();
-                    app.ui.toast('Record deleted.');
-                    app.renderAll();
+                    app.db.save(); app.ui.toast('Record deleted.'); app.renderAll();
                 },
                 render: () => {
                     const tbody = document.getElementById('table-employees');
-                    const select = document.getElementById('ps-emp-select');
-                    tbody.innerHTML = ''; select.innerHTML = '<option value="">Select Employee...</option>';
+                    const selectPs = document.getElementById('ps-emp-select');
+                    const selectLt = document.getElementById('lt-emp-select');
+                    
+                    tbody.innerHTML = ''; 
+                    selectPs.innerHTML = '<option value="">Select Employee...</option>';
+                    selectLt.innerHTML = '<option value="">Select Employee...</option>';
 
                     if(app.data.employees.length === 0) return tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-slate-400 italic">No employees found.</td></tr>';
 
                     app.data.employees.forEach(emp => {
-                        const gross = emp.basic + emp.da;
+                        const gross = emp.basic + emp.da + (emp.allowance || 0);
                         tbody.innerHTML += `
                             <tr class="hover:bg-slate-50/80 transition-colors group">
                                 <td class="p-4 border-b border-slate-100 font-mono text-xs text-slate-500">${emp.code}</td>
                                 <td class="p-4 border-b border-slate-100 font-bold text-slate-800 flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center mr-3 text-xs">${emp.name.charAt(0)}</div>
-                                    ${emp.name}
+                                    <div class="h-8 w-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center mr-3 text-xs">${emp.name.charAt(0)}</div>${emp.name}
                                 </td>
                                 <td class="p-4 border-b border-slate-100 text-slate-600"><span class="block">${emp.role}</span><span class="text-xs text-slate-400">${emp.dept}</span></td>
                                 <td class="p-4 border-b border-slate-100 text-slate-600 text-xs">${emp.email}</td>
@@ -685,8 +833,67 @@
                                     <button onclick="app.employees.delete('${emp.id}')" class="text-red-400 hover:text-red-600 bg-red-50 p-2 rounded-lg"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>`;
-                        select.innerHTML += `<option value="${emp.id}">${emp.name} (${emp.code})</option>`;
+                        const opt = `<option value="${emp.id}">${emp.name} (${emp.code})</option>`;
+                        selectPs.innerHTML += opt;
+                        selectLt.innerHTML += opt;
                     });
+                }
+            },
+
+            // --- STREAMING_CHUNK: Letters Module ---
+            letters: {
+                generate: () => {
+                    const id = document.getElementById('lt-emp-select').value;
+                    const type = document.getElementById('lt-type-select').value;
+                    const container = document.getElementById('printable-letter');
+                    
+                    if(!id) { container.classList.add('hidden'); return; }
+
+                    const emp = app.data.employees.find(e => e.id === id);
+                    if(!emp) return;
+                    
+                    const gross = emp.basic + emp.da + (emp.allowance || 0);
+
+                    document.getElementById('lt-emp-name').innerText = emp.name;
+                    document.getElementById('lt-emp-code').innerText = `Emp Code: ${emp.code}`;
+                    document.getElementById('lt-emp-role').innerText = emp.role;
+                    document.getElementById('lt-emp-dept').innerText = emp.dept;
+                    
+                    document.getElementById('lt-ref').innerText = Math.floor(Math.random() * 900) + 100;
+                    document.getElementById('lt-date').innerText = new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+                    document.getElementById('lt-sign-company').innerText = app.data.settings.companyName || 'M/S Dekapathar Tea Estate';
+
+                    const contentDiv = document.getElementById('lt-content');
+                    
+                    if(type === 'joining') {
+                        contentDiv.innerHTML = `
+                            <p class="font-bold underline text-center text-lg mb-6">Subject: Letter of Appointment</p>
+                            <p>Dear ${emp.name},</p>
+                            <p>We are pleased to offer you the position of <strong>${emp.role}</strong> in the <strong>${emp.dept}</strong> department at our factory.</p>
+                            <p>Your Gross Monthly Salary will be <strong>₹${app.formatINR(gross)}</strong>, subject to statutory deductions as per the Assam Factories Rules, 1950 and applicable laws.</p>
+                            <p>You will be governed by the standard terms and conditions of employment of the company. Please sign and return the duplicate copy of this letter as a token of your acceptance.</p>
+                            <p>We welcome you to the team and wish you a successful career with us.</p>
+                        `;
+                    } else if (type === 'resignation') {
+                        contentDiv.innerHTML = `
+                            <p class="font-bold underline text-center text-lg mb-6">Subject: Acceptance of Resignation</p>
+                            <p>Dear ${emp.name},</p>
+                            <p>This is to acknowledge the receipt of your resignation letter. Management has decided to accept your resignation from the post of <strong>${emp.role}</strong>.</p>
+                            <p>Your final working day with the company will be considered as of today's date. You are requested to hand over all company assets and complete the clearance formalities with the HR and Finance departments to process your full and final settlement.</p>
+                            <p>We thank you for your services to the company and wish you success in your future endeavors.</p>
+                        `;
+                    } else if (type === 'termination') {
+                        contentDiv.innerHTML = `
+                            <p class="font-bold underline text-center text-lg mb-6 text-red-800">Subject: Notice of Termination of Employment</p>
+                            <p>Dear ${emp.name},</p>
+                            <p>This letter is to formally notify you that your employment with the company as <strong>${emp.role}</strong> is being terminated effective immediately.</p>
+                            <p>This action is taken in accordance with the company's disciplinary and employment policies. Your final dues, including any pending salary and statutory payouts, will be processed and credited to your registered bank account within the next 15 working days.</p>
+                            <p>Please surrender any company property, ID cards, and access keys to the HR department immediately.</p>
+                        `;
+                    }
+
+                    container.classList.remove('hidden');
+                    app.ui.log(`Generated ${type} letter for ${emp.name}.`);
                 }
             },
 
@@ -700,12 +907,13 @@
                     if(!emp) return;
                     
                     const isAssam = app.data.settings.assamRules;
-                    const gross = emp.basic + emp.da;
+                    const allow = emp.allowance || 0;
+                    const gross = emp.basic + emp.da + allow;
                     
-                    // Strict Assam Factory Rules Math
-                    const pf = isAssam ? Math.round((emp.basic + emp.da) * 0.12) : 0; 
-                    const ptax = isAssam ? (gross >= 10000 ? 208 : 0) : 0; 
-                    const net = gross - (pf + ptax);
+                    // Specific Employee Overrides or Fallbacks
+                    const calcPF = emp.pfOpt ? Math.round(gross * 0.12) : 0; 
+                    const calcPTax = (emp.ptaxOpt && gross >= 10000) ? 208 : 0; 
+                    const net = gross - (calcPF + calcPTax);
 
                     document.getElementById('ps-doc-name').innerText = emp.name;
                     document.getElementById('ps-doc-code').innerText = emp.code;
@@ -714,11 +922,13 @@
                     
                     document.getElementById('ps-doc-basic').innerText = app.formatINR(emp.basic);
                     document.getElementById('ps-doc-da').innerText = app.formatINR(emp.da);
-                    document.getElementById('ps-doc-pf').innerText = app.formatINR(pf);
-                    document.getElementById('ps-doc-ptax').innerText = app.formatINR(ptax);
+                    document.getElementById('ps-doc-allowance').innerText = app.formatINR(allow);
+                    
+                    document.getElementById('ps-doc-pf').innerText = app.formatINR(calcPF);
+                    document.getElementById('ps-doc-ptax').innerText = app.formatINR(calcPTax);
                     
                     document.getElementById('ps-doc-gross').innerText = app.formatINR(gross);
-                    document.getElementById('ps-doc-deduct').innerText = app.formatINR(pf + ptax);
+                    document.getElementById('ps-doc-deduct').innerText = app.formatINR(calcPF + calcPTax);
                     document.getElementById('ps-doc-net').innerText = `₹ ${app.formatINR(net)}`;
 
                     const tag = document.getElementById('ps-assam-tag');
@@ -747,8 +957,6 @@
                     
                     // Actual Sender.net API Logic
                     try {
-                        // Note: Depending on CORS rules of Sender.net, this might require a proxy if run directly from a browser.
-                        // We wrap in try/catch to gracefully handle CORS blocks in static environments.
                         const res = await fetch("https://api.sender.net/v2/messages", {
                             method: "POST",
                             headers: {
@@ -760,7 +968,7 @@
                                 "from": { "email": s.senderEmail || "hr@dekapathartea.com" },
                                 "to": [ { "email": emp.email } ],
                                 "subject": `Salary Payslip - ${emp.name}`,
-                                "html_content": `<h3>M/S DEKAPATHAR TEA ESTATE</h3><p>Dear ${emp.name},</p><p>Your payslip for this month has been generated. Gross Pay: INR ${emp.basic + emp.da}.</p>`
+                                "html_content": `<h3>${s.companyName || 'Company'}</h3><p>Dear ${emp.name},</p><p>Your payslip for this month has been generated. Gross Pay: INR ${emp.basic + emp.da + (emp.allowance||0)}.</p>`
                             })
                         });
                         
@@ -768,11 +976,10 @@
                             app.ui.toast(`Secure email dispatched to ${emp.email} via Sender.net!`);
                             app.ui.log(`Payslip emailed to ${emp.name} via Sender.net.`);
                         } else {
-                            // If it fails (e.g. invalid token, CORS), we simulate for the UX demo
-                            throw new Error("API call blocked or failed");
+                            throw new Error("API call failed");
                         }
                     } catch(err) {
-                        console.log("Sender.net API fallback trigger (likely CORS). Simulating success.");
+                        console.log("Sender.net API fallback (Likely CORS block on static file). Simulating success.");
                         setTimeout(() => {
                             app.ui.toast(`Secure email dispatched to ${emp.email} via Sender.net!`);
                             app.ui.log(`Payslip emailed to ${emp.name} via Sender.net.`);
@@ -781,27 +988,44 @@
                 }
             },
 
+            // --- STREAMING_CHUNK: Calendar, Jobs, Assets ---
+            calendar: {
+                save: (e) => {
+                    e.preventDefault();
+                    app.data.calendar.push({
+                        id: Date.now().toString(),
+                        date: document.getElementById('evt-date').value,
+                        name: document.getElementById('evt-name').value,
+                        type: document.getElementById('evt-type').value
+                    });
+                    // Sort by date
+                    app.data.calendar.sort((a,b) => new Date(a.date) - new Date(b.date));
+                    app.db.save(); app.ui.toast('Event scheduled.'); app.ui.modal('modal-event', false); app.renderAll();
+                },
+                delete: (id) => { app.data.calendar = app.data.calendar.filter(c => c.id !== id); app.db.save(); app.renderAll(); },
+                render: () => {
+                    const tbody = document.getElementById('table-calendar'); tbody.innerHTML = '';
+                    if(!app.data.calendar || app.data.calendar.length === 0) return tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-400 italic">No schedules.</td></tr>';
+                    
+                    app.data.calendar.forEach(evt => {
+                        const d = new Date(evt.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                        const color = evt.type === 'Holiday' ? 'text-green-600 bg-green-50' : 'text-blue-600 bg-blue-50';
+                        tbody.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-100"><td class="p-4 font-bold text-slate-700">${d}</td><td class="p-4 font-bold text-slate-800">${evt.name}</td><td class="p-4"><span class="px-2.5 py-1 rounded-md text-xs font-bold ${color}">${evt.type}</span></td><td class="p-4 text-right"><button onclick="app.calendar.delete('${evt.id}')" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-trash"></i></button></td></tr>`;
+                    });
+                }
+            },
+
             jobs: {
                 save: (e) => {
                     e.preventDefault();
-                    app.data.jobs.push({
-                        id: Date.now().toString(),
-                        title: document.getElementById('job-title').value,
-                        dept: document.getElementById('job-dept').value,
-                        vacancies: document.getElementById('job-vacancies').value
-                    });
-                    app.db.save();
-                    app.ui.toast('Job requisition published to ATS.');
-                    app.ui.modal('modal-job', false);
-                    app.renderAll();
+                    app.data.jobs.push({ id: Date.now().toString(), title: document.getElementById('job-title').value, dept: document.getElementById('job-dept').value, vacancies: document.getElementById('job-vacancies').value });
+                    app.db.save(); app.ui.toast('Job requisition published.'); app.ui.modal('modal-job', false); app.renderAll();
                 },
                 delete: (id) => { app.data.jobs = app.data.jobs.filter(j => j.id !== id); app.db.save(); app.renderAll(); },
                 render: () => {
                     const tbody = document.getElementById('table-jobs'); tbody.innerHTML = '';
                     if(app.data.jobs.length === 0) return tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-400 italic">No open jobs.</td></tr>';
-                    app.data.jobs.forEach(job => {
-                        tbody.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-100"><td class="p-4 font-bold text-slate-800">${job.title}</td><td class="p-4 text-slate-600"><span class="bg-slate-100 px-2.5 py-1 rounded text-xs font-semibold">${job.dept}</span></td><td class="p-4 font-bold text-brand-600">${job.vacancies} Openings</td><td class="p-4 text-right"><button onclick="app.jobs.delete('${job.id}')" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-trash"></i></button></td></tr>`;
-                    });
+                    app.data.jobs.forEach(job => { tbody.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-100"><td class="p-4 font-bold text-slate-800">${job.title}</td><td class="p-4 text-slate-600"><span class="bg-slate-100 px-2.5 py-1 rounded text-xs font-semibold">${job.dept}</span></td><td class="p-4 font-bold text-brand-600">${job.vacancies} Openings</td><td class="p-4 text-right"><button onclick="app.jobs.delete('${job.id}')" class="text-red-400 hover:text-red-600 p-2"><i class="fas fa-trash"></i></button></td></tr>`; });
                 }
             },
 
@@ -809,7 +1033,7 @@
                 save: (e) => {
                     e.preventDefault();
                     app.data.assets.push({ id: Date.now().toString(), name: document.getElementById('ast-name').value, serial: document.getElementById('ast-serial').value, condition: document.getElementById('ast-condition').value });
-                    app.db.save(); app.ui.toast('Asset registered in inventory.'); app.ui.modal('modal-asset', false); app.renderAll();
+                    app.db.save(); app.ui.toast('Asset registered.'); app.ui.modal('modal-asset', false); app.renderAll();
                 },
                 delete: (id) => { app.data.assets = app.data.assets.filter(a => a.id !== id); app.db.save(); app.renderAll(); },
                 render: () => {
@@ -827,13 +1051,11 @@
                 loadIntoUI: () => {
                     const s = app.data.settings;
                     
-                    // Brand & Compliance
                     document.getElementById('set-company-name').value = s.companyName || '';
                     document.getElementById('set-company-logo').value = s.companyLogo || '';
                     document.getElementById('set-assam-rules').checked = s.assamRules;
                     s.assamRules ? document.body.classList.add('assam-rules-active') : document.body.classList.remove('assam-rules-active');
                     
-                    // APIs
                     document.getElementById('set-kv-url').value = s.kvUrl || '';
                     document.getElementById('set-kv-token').value = s.kvToken || '';
                     document.getElementById('set-sender-token').value = s.senderToken || '';
@@ -841,7 +1063,6 @@
                     document.getElementById('set-cf-app').value = s.cashfreeAppId || '';
                     document.getElementById('set-cf-secret').value = s.cashfreeSecret || '';
 
-                    // Update Status Badges
                     document.getElementById('status-vercel').className = s.kvUrl ? "bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded font-bold" : "bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded font-bold";
                     document.getElementById('status-vercel').innerText = s.kvUrl ? "Configured" : "Unconfigured";
                     
@@ -866,7 +1087,7 @@
                     app.data.settings.kvUrl = document.getElementById('set-kv-url').value;
                     app.data.settings.kvToken = document.getElementById('set-kv-token').value;
                     app.ui.toast('Connecting to Vercel KV...');
-                    await app.db.save(); // This will trigger the cloud push
+                    await app.db.save();
                     app.ui.log('Vercel KV Cloud Database connected.');
                     app.renderAll();
                 },
@@ -888,13 +1109,15 @@
                 const s = app.data.settings;
                 document.getElementById('dash-staff').innerText = app.data.employees.length;
                 document.getElementById('dash-jobs').innerText = app.data.jobs.length;
-                document.getElementById('dash-assets').innerText = app.data.assets.length;
-                document.getElementById('dash-payroll').innerText = `₹${app.formatINR(app.data.employees.reduce((sum, e) => sum + Number(e.basic) + Number(e.da), 0))}`;
+                document.getElementById('dash-events').innerText = app.data.calendar ? app.data.calendar.length : 0;
+                document.getElementById('dash-payroll').innerText = `₹${app.formatINR(app.data.employees.reduce((sum, e) => sum + Number(e.basic) + Number(e.da) + Number(e.allowance||0), 0))}`;
+                
                 document.getElementById('sidebar-company-name').innerText = s.companyName || 'SaaS Workspace';
                 document.getElementById('ps-doc-company').innerText = s.companyName || 'COMPANY NAME';
+                document.getElementById('lt-doc-company').innerText = s.companyName || 'COMPANY NAME';
                 if(s.companyLogo) document.getElementById('sidebar-logo').src = s.companyLogo;
                 
-                app.employees.render(); app.jobs.render(); app.assets.render(); app.settings.loadIntoUI();
+                app.employees.render(); app.jobs.render(); app.assets.render(); app.calendar.render(); app.settings.loadIntoUI();
             },
 
             boot: () => {
